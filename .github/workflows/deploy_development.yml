@@ -59,7 +59,7 @@ jobs:
     - name: Run Tests
       env:
           DEBUG: 0
-          DATABASE_URL: sqlite:///
+          DATABASE_URL: sqlite:////app/file.sqlite
           SENDER_EMAIL: noreply@prunedge.com
       run: |
         cd app
