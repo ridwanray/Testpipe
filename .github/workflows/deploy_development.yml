@@ -27,15 +27,15 @@ jobs:
       #     --health-timeout 5s 
       #     --health-retries 5
 
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
+      # redis:
+      #   image: redis
+      #   options: >-
+      #     --health-cmd "redis-cli ping"
+      #     --health-interval 10s
+      #     --health-timeout 5s
+      #     --health-retries 5
+      #   ports:
+      #     - 6379:6379
 
     steps:
     - uses: actions/checkout@v2 
@@ -49,12 +49,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r app/requirements/dev.txt
 
-    # - name: Run migrations
-    #   env:
-    #       DATABASE_URL: sqlite:///app/
-    #   run: |
-    #     python app/manage.py makemigrations
-    #     python app/manage.py migrate
+    - name: Run migrations
+      # env:
+      #     DATABASE_URL: sqlite:///app/
+      run: |
+        python app/manage.py makemigrations
+        python app/manage.py migrate
 
     - name: Run Tests
       env:
