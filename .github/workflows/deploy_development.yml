@@ -50,8 +50,8 @@ jobs:
         pip install -r app/requirements/dev.txt
 
     - name: Run migrations
-      # env:
-      #     DATABASE_URL: sqlite:///app/
+      env:
+          DATABASE_URL: sqlite:///app/file.sqlite
       run: |
         python app/manage.py makemigrations
         python app/manage.py migrate
