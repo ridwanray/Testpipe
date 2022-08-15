@@ -12,15 +12,15 @@ jobs:
       matrix:
         db: [sqlite]
         python-version: [3.10.3]
-    # services:
-      # postgres:
-      #   image: postgres:latest
-      #   env:
-      #     POSTGRES_USER: prunedge
-      #     POSTGRES_PASSWORD: password
-      #     POSTGRES_DB: test_database
-      #   ports:
-      #     - 5432:5432
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: prunedge
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_database
+        ports:
+          - 5432:5432
       #   options:
       #     --health-cmd pg_isready 
       #     --health-interval 10s 
@@ -46,14 +46,11 @@ jobs:
     #   run: |
     #     python app/manage.py makemigrations
     #     python app/manage.py migrate
-# DB_NAME=new_smarteye_local_db
-# DB_USER=ridwan
-# DB_PASSWORD=passEWE21#
-# DB_HOST=localhost
+
     - name: Run Tests
       env:
           DEBUG: 0
-          DATABASE_URL: postgres://ridwan:ridwan@localhost:5432/new_smarteye_local_db
+          DATABASE_URL: postgres://prunedge:password@localhost:5432/new_smarteye_local_db
           SENDER_EMAIL: noreply@prunedge.com
       run: |
         cd app
