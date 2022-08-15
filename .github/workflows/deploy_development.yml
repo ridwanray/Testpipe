@@ -1,0 +1,76 @@
+name: Deploy Development
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        db: [sqlite]
+        python-version: [3.10.3]
+    services:
+      # postgres:
+      #   image: postgres:latest
+      #   env:
+      #     POSTGRES_USER: prunedge
+      #     POSTGRES_PASSWORD: password
+      #     POSTGRES_DB: test_database
+      #   ports:
+      #     - 5432:5432
+      #   options:
+      #     --health-cmd pg_isready 
+      #     --health-interval 10s 
+      #     --health-timeout 5s 
+      #     --health-retries 5
+
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v2 
+    - name: Set up Python 3.10.3
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r app/requirements/dev.txt
+
+    - name: Run migrations
+      env:
+          DATABASE_URL: sqlite:///app/
+      run: |
+        python app/manage.py makemigrations
+        python app/manage.py migrate
+
+    - name: Run Tests
+      env:
+          DEBUG: 0
+          DATABASE_URL: sqlite:///app/
+          SENDER_EMAIL: noreply@prunedge.com
+      run: |
+        cd app
+        python manage.py test
+        
+
+    - name: Push to server and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DECA_HOST }}
+        USERNAME: ${{ secrets.DECA_USERNAME }}
+        PORT: ${{ secrets.DECA_PORT }}
+        KEY: ${{ secrets.DECA_SSHKEY }}
+        script: cd ${{ secrets.DECA_PATH }} && ls && git pull && docker compose up --build -d

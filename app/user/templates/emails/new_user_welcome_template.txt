@@ -1,0 +1,11 @@
+Hello {{fullname}},
+
+Thanks for joining GloEPID
+
+Kindly find your verification token below. This token will only be valid for 24 hours
+
+{{ token }}
+
+
+Thank You.
+

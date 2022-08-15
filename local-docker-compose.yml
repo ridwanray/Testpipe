@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  api: &api
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    image: prunedge/hrpay-api
+    command: python manage.py runserver 0.0.0.0:10009
+    volumes:
+      - ./app:/app
+    ports:
+      - "10009:10009"
+    env_file:
+      - ./.env
+    restart: unless-stopped
+
+  redis:
+    image: bitnami/redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  celery:
+    <<: *api
+    command: celery -A core worker --loglevel=info --logfile=logs/celery.log
+    ports: [ ]
+    volumes:
+      - ./app:/app
+    env_file:
+      - ./.env
+    depends_on:
+      - api
+      - redis
+
+  celery-beat:
+    <<: *api
+    command: celery -A core beat -l info
+    ports: [ ]
+    volumes:
+      - ./app:/app
+    env_file:
+      - ./.env
+    depends_on:
+      - celery
+
+  dashboard:
+    <<: *api
+    command: celery --broker=${REDIS_URL} flower --port=5555
+    ports:
+      - "5559:5555"
+    env_file:
+      - ./.env
+    depends_on:
+      - api
+      - celery

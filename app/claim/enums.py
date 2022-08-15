@@ -1,0 +1,6 @@
+CLAIM_STATUS_OPTIONS = (
+    ("PENDING", "PENDING"),
+    ("APPROVED", "APPROVED"),
+    ("DENIED", "DENIED"),
+    ("PAID", "PAID"),
+)
