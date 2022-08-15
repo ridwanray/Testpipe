@@ -27,15 +27,6 @@ jobs:
       #     --health-timeout 5s 
       #     --health-retries 5
 
-      # redis:
-      #   image: redis
-      #   options: >-
-      #     --health-cmd "redis-cli ping"
-      #     --health-interval 10s
-      #     --health-timeout 5s
-      #     --health-retries 5
-      #   ports:
-      #     - 6379:6379 s
 
     steps:
     - uses: actions/checkout@v2 
@@ -49,17 +40,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r app/requirements/dev.txt
 
-    - name: Run migrations
-      env:
-          DATABASE_URL: sqlite:///app/file.sqlite
-      run: |
-        python app/manage.py makemigrations
-        python app/manage.py migrate
-
+    # - name: Run migrations
+    #   env:
+    #       DATABASE_URL: sqlite:///app/file.sqlite
+    #   run: |
+    #     python app/manage.py makemigrations
+    #     python app/manage.py migrate
+# DB_NAME=new_smarteye_local_db
+# DB_USER=ridwan
+# DB_PASSWORD=passEWE21#
+# DB_HOST=localhost
     - name: Run Tests
       env:
           DEBUG: 0
-          DATABASE_URL: sqlite:////app/file.sqlite
+          DATABASE_URL: postgres://ridwan:ridwan@localhost:5432/new_smarteye_local_db
           SENDER_EMAIL: noreply@prunedge.com
       run: |
         cd app
