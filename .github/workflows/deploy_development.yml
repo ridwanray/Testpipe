@@ -12,7 +12,7 @@ jobs:
       matrix:
         db: [sqlite]
         python-version: [3.10.3]
-    services:
+    # services:
       # postgres:
       #   image: postgres:latest
       #   env:
